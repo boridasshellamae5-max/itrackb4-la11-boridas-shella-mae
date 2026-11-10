@@ -9,16 +9,15 @@ use App\Models\Category;
 
 class ProductController extends Controller
 {
+    // DISPLAY ALL PRODUCTS
     public function index(Request $request)
     {
         $category = $request->query('category_id', '');
         $price = $request->query('price', '');
 
-        // SS6: Enable query logging
         DB::flushQueryLog();
         DB::enableQueryLog();
 
-        // BEFORE eager loading: no with()
         $query = Product::with('category');
 
         if ($category !== '') {
@@ -38,13 +37,13 @@ class ProductController extends Controller
         ));
     }
 
-    public function show($id)
+    // SHOW SINGLE PRODUCT
+    public function show(Product $product)
     {
-        $product = Product::findOrFail($id);
-
         return view('products.show', compact('product'));
     }
 
+    // SHOW CREATE FORM
     public function create()
     {
         $categories = Category::all();
@@ -52,6 +51,7 @@ class ProductController extends Controller
         return view('products.create', compact('categories'));
     }
 
+    // SAVE NEW PRODUCT
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -67,5 +67,43 @@ class ProductController extends Controller
 
         return redirect()->route('products.index')
             ->with('success', 'Product added successfully!');
+    }
+
+    // SHOW EDIT FORM
+    public function edit(Product $product)
+    {
+        $categories = Category::all();
+
+        return view('products.edit', compact(
+            'product',
+            'categories'
+        ));
+    }
+
+    // UPDATE PRODUCT
+    public function update(Request $request, Product $product)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'price' => 'required|numeric|min:0',
+            'quantity' => 'required|integer|min:0',
+            'category_id' => 'required|exists:categories,id',
+            'available' => 'required|boolean',
+            'description' => 'nullable|string',
+        ]);
+
+        $product->update($validated);
+
+        return redirect()->route('products.index')
+            ->with('success', 'Product updated successfully!');
+    }
+
+    // DELETE PRODUCT
+    public function destroy(Product $product)
+    {
+        $product->delete();
+
+        return redirect()->route('products.index')
+            ->with('success', 'Product deleted successfully!');
     }
 }

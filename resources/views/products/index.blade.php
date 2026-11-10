@@ -7,6 +7,13 @@
 
 <h2>Product List</h2>
 
+
+@if (session('success'))
+    <div class="alert alert-success">
+        {{ session('success') }}
+    </div>
+@endif
+
 <hr>
 
 <h5>Filter by Category</h5>
@@ -89,14 +96,35 @@
             <td>{{ $product->name }}</td>
             <td>₱{{ number_format($product->price) }}</td>
             <td>{{ $product->quantity }}</td>
-
             <td>{{ $product->category->name ?? 'No Category' }}</td>
 
             <td>
-                <a href="{{ route('products.show', $product->id) }}"
+                {{-- VIEW BUTTON --}}
+                <a href="{{ route('products.show', $product) }}"
                    class="btn btn-info btn-sm">
                     View
                 </a>
+
+                {{-- EDIT BUTTON --}}
+                <a href="{{ route('products.edit', $product) }}"
+                   class="btn btn-warning btn-sm">
+                    Edit
+                </a>
+
+                {{-- DELETE FORM: SS8 --}}
+                <form action="{{ route('products.destroy', $product) }}"
+                      method="POST"
+                      style="display: inline;"
+                      onsubmit="return confirm('Delete this record?')">
+
+                    @csrf
+                    @method('DELETE')
+
+                    <button type="submit" class="btn btn-danger btn-sm">
+                        Delete
+                    </button>
+
+                </form>
             </td>
         </tr>
 

@@ -1,15 +1,16 @@
 
-ITRACKB4 – Laboratory Activity 10
-Your Own Lookup Table
+ITRACKB4 Laboratory Activity 11
+Finish Your Own CRUD
 
-G1. Which column did you turn into a table, and why that one and not another?
 
-I turned the `category` column into a separate `categories` table because multiple products share the same category, such as Electronics and Accessories. Separating it avoids repeated category names and allows products to reference categories through a foreign key called `category_id`.
+G1. Route model binding needs two things to be true. Name both, and say what happens when only one of them is?
 
-G2. What number did screenshot 6 show, and why exactly that number?
+Route model binding requires the route parameter name to match the controller's model parameter and the controller to use the correct type-hinted Eloquent model. In my project, `{product}` matches `Product $product` in the controller; if one does not match, Laravel may fail to resolve the expected model or return a 404 error.
 
-Screenshot 6 showed 7 queries. It executed one query to retrieve the six products and six additional queries to retrieve each product's category individually because eager loading was not yet used.
+G2. Your Delete link opened the detail page instead of deleting anything. Explain why?
 
-G3. Your belongsTo method is named in the singular. What would break if you made it plural?
+An HTML anchor link sends a GET request, not a DELETE request. Since my `products.show` route handles GET requests at `/products/{product}`, clicking the Delete link opened the product details page instead of deleting the record.
 
-The relationship method is named `category()` because each product belongs to one category. If I named it `categories()`, Eloquent would assume a different foreign key, such as `categories_id`, and the relationship would not work correctly with my `category_id` column.
+G3. old() takes a second argument on your edit form. What would break if you left it out, and what would break if you used only it?
+
+The second argument in `old('name', $product->name)` displays the existing saved product value when the edit form first loads. Without the second argument, the field may appear blank on the first load; using only `old()` also fails to show the saved value when there is no previous submitted input.
